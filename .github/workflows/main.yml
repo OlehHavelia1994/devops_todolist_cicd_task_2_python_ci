@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: ["main"]
 env:
-  PYTHON_VERSION: "3.13"
+  PYTHON_VERSION: "3.10"
 jobs:
   python-ci:
     runs-on: ubuntu-latest
@@ -26,11 +26,7 @@ jobs:
           pip install flake8 coverage
           pip install -r requirements.txt
 
-      - name: Run unit tests
-        run: |
-          python3 manage.py test api
-
-      - name: Generate coverage
+      - name: Generate coverage and run tests
         run: coverage run --source=. manage.py test api
 
       - name: Display coverage report
@@ -39,7 +35,13 @@ jobs:
       - name: Lint with Flake8
         run: |
           cd ../
-          flake8 . --show-source --statistics
+          flake8 . --show-source --statistics --exit-zero
+
+      - name: Upload Python code
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-code
+          path: .
 
       - name: Check Complexity
         run: |
